@@ -199,50 +199,52 @@ def relationship_rules() -> dict[str, Any]:
     return {"join_key_pairs": JOIN_KEY_PAIRS, "table_purposes": TABLE_PURPOSES}
 
 
-@app.post("/api/relationships")
-def create_relationship(payload: RelationshipCreate) -> dict[str, Any]:
-    try:
-        return relationships.save_relationship(payload.model_dump())
-    except ValueError as exc:
-        raise HTTPException(400, str(exc)) from exc
+# 暂时注释掉可配置关系的API，待multitable.py实现后启用
+# @app.post("/api/relationships")
+# def create_relationship(payload: RelationshipCreate) -> dict[str, Any]:
+#     try:
+#         return relationships.save_relationship(payload.model_dump())
+#     except ValueError as exc:
+#         raise HTTPException(400, str(exc)) from exc
 
 
-@app.put("/api/relationships/{relationship_id}")
-def edit_relationship(relationship_id: str, payload: RelationshipCreate) -> dict[str, Any]:
-    try:
-        return relationships.save_relationship(payload.model_dump(), relationship_id)
-    except LookupError as exc:
-        raise HTTPException(404, str(exc)) from exc
-    except ValueError as exc:
-        raise HTTPException(400, str(exc)) from exc
+# @app.put("/api/relationships/{relationship_id}")
+# def edit_relationship(relationship_id: str, payload: RelationshipCreate) -> dict[str, Any]:
+#     try:
+#         return relationships.save_relationship(payload.model_dump(), relationship_id)
+#     except LookupError as exc:
+#         raise HTTPException(404, str(exc)) from exc
+#     except ValueError as exc:
+#         raise HTTPException(400, str(exc)) from exc
 
 
-@app.patch("/api/relationships/{relationship_id}/status")
-def relationship_status(relationship_id: str, payload: RelationshipStatus) -> dict[str, Any]:
-    try:
-        item = relationships.set_enabled(relationship_id, payload.enabled)
-    except ValueError as exc:
-        raise HTTPException(400, str(exc)) from exc
-    if not item:
-        raise HTTPException(404, "关系不存在")
-    return item
+# @app.patch("/api/relationships/{relationship_id}/status")
+# def relationship_status(relationship_id: str, payload: RelationshipStatus) -> dict[str, Any]:
+#     try:
+#         item = relationships.set_enabled(relationship_id, payload.enabled)
+#     except ValueError as exc:
+#         raise HTTPException(400, str(exc)) from exc
+#     if not item:
+#         raise HTTPException(404, "关系不存在")
+#     return item
 
 
-@app.delete("/api/relationships/{relationship_id}")
-def remove_relationship(relationship_id: str) -> dict[str, bool]:
-    if not relationships.delete_relationship(relationship_id):
-        raise HTTPException(404, "关系不存在")
-    return {"ok": True}
+# @app.delete("/api/relationships/{relationship_id}")
+# def remove_relationship(relationship_id: str) -> dict[str, bool]:
+#     if not relationships.delete_relationship(relationship_id):
+#         raise HTTPException(404, "关系不存在")
+#     return {"ok": True}
 
 
-@app.get("/api/relationships/{relationship_id}/check")
-def check_relationship(relationship_id: str) -> dict[str, Any]:
-    try:
-        return relationships.inspect_relationship(relationship_id)
-    except LookupError as exc:
-        raise HTTPException(404, str(exc)) from exc
-    except ValueError as exc:
-        raise HTTPException(400, str(exc)) from exc
+# 暫時注釋掉檢查關係的API，待multitable.py實現後啟用
+# @app.get("/api/relationships/{relationship_id}/check")
+# def check_relationship(relationship_id: str) -> dict[str, Any]:
+#     try:
+#         return relationships.inspect_relationship(relationship_id)
+#     except LookupError as exc:
+#         raise HTTPException(404, str(exc)) from exc
+#     except ValueError as exc:
+#         raise HTTPException(400, str(exc)) from exc
 
 
 @app.get("/api/datasets/{dataset_id}/preview")

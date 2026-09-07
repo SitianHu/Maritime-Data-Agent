@@ -59,54 +59,57 @@ def get_relationship(relationship_id: str) -> dict[str, Any] | None:
     return _serialize(row) if row else None
 
 
-def save_relationship(payload: dict[str, Any], relationship_id: str | None = None) -> dict[str, Any]:
-    _validate(payload)
-    now = db.utc_now()
-    with db.connection() as conn:
-        if relationship_id:
-            cursor = conn.execute(
-                """UPDATE dataset_relationships SET name=?, left_dataset_id=?, left_field=?,
-                right_dataset_id=?, right_field=?, meaning=?, left_grain=?, right_grain=?, enabled=?, updated_at=?
-                WHERE id=?""",
-                (payload["name"].strip(), payload["left_dataset_id"], payload["left_field"],
-                 payload["right_dataset_id"], payload["right_field"], payload["meaning"].strip(),
-                 payload["left_grain"].strip(), payload["right_grain"].strip(), int(payload.get("enabled", True)),
-                 now, relationship_id),
-            )
-            if cursor.rowcount == 0:
-                raise LookupError("关系不存在")
-        else:
-            relationship_id = uuid.uuid4().hex
-            conn.execute(
-                "INSERT INTO dataset_relationships VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
-                (relationship_id, payload["name"].strip(), payload["left_dataset_id"], payload["left_field"],
-                 payload["right_dataset_id"], payload["right_field"], payload["meaning"].strip(),
-                 payload["left_grain"].strip(), payload["right_grain"].strip(), int(payload.get("enabled", True)),
-                 now, now),
-            )
-    _invalidate_sql_cache()
-    return get_relationship(relationship_id) or {}
+# 配置关系功能暂时注释掉，待multitable.py实现后启用
+# def save_relationship(payload: dict[str, Any], relationship_id: str | None = None) -> dict[str, Any]:
+#     _validate(payload)
+#     now = db.utc_now()
+#     with db.connection() as conn:
+#         if relationship_id:
+#             cursor = conn.execute(
+#                 """UPDATE dataset_relationships SET name=?, left_dataset_id=?, left_field=?,
+#                 right_dataset_id=?, right_field=?, meaning=?, left_grain=?, right_grain=?, enabled=?, updated_at=?
+#                 WHERE id=?""",
+#                 (payload["name"].strip(), payload["left_dataset_id"], payload["left_field"],
+#                  payload["right_dataset_id"], payload["right_field"], payload["meaning"].strip(),
+#                  payload["left_grain"].strip(), payload["right_grain"].strip(), int(payload.get("enabled", True)),
+#                  now, relationship_id),
+#             )
+#             if cursor.rowcount == 0:
+#                 raise LookupError("关系不存在")
+#         else:
+#             relationship_id = uuid.uuid4().hex
+#             conn.execute(
+#                 "INSERT INTO dataset_relationships VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+#                 (relationship_id, payload["name"].strip(), payload["left_dataset_id"], payload["left_field"],
+#                  payload["right_dataset_id"], payload["right_field"], payload["meaning"].strip(),
+#                  payload["left_grain"].strip(), payload["right_grain"].strip(), int(payload.get("enabled", True)),
+#                  now, now),
+#             )
+#     _invalidate_sql_cache()
+#     return get_relationship(relationship_id) or {}
 
 
-def set_enabled(relationship_id: str, enabled: bool) -> dict[str, Any] | None:
-    relationship = get_relationship(relationship_id)
-    if not relationship:
-        return None
-    if enabled:
-        _validate(relationship)
-    with db.connection() as conn:
-        conn.execute("UPDATE dataset_relationships SET enabled=?, updated_at=? WHERE id=?",
-                     (int(enabled), db.utc_now(), relationship_id))
-    _invalidate_sql_cache()
-    return get_relationship(relationship_id)
+# 配置关系功能暂时注释掉，待multitable.py实现后启用
+# def set_enabled(relationship_id: str, enabled: bool) -> dict[str, Any] | None:
+#     relationship = get_relationship(relationship_id)
+#     if not relationship:
+#         return None
+#     if enabled:
+#         _validate(relationship)
+#     with db.connection() as conn:
+#         conn.execute("UPDATE dataset_relationships SET enabled=?, updated_at=? WHERE id=?",
+#                      (int(enabled), db.utc_now(), relationship_id))
+#     _invalidate_sql_cache()
+#     return get_relationship(relationship_id)
 
 
-def delete_relationship(relationship_id: str) -> bool:
-    with db.connection() as conn:
-        cursor = conn.execute("DELETE FROM dataset_relationships WHERE id = ?", (relationship_id,))
-    if cursor.rowcount:
-        _invalidate_sql_cache()
-    return cursor.rowcount > 0
+# 配置关系功能暂时注释掉，待multitable.py实现后启用
+# def delete_relationship(relationship_id: str) -> bool:
+#     with db.connection() as conn:
+#         cursor = conn.execute("DELETE FROM dataset_relationships WHERE id = ?", (relationship_id,))
+#     if cursor.rowcount:
+#         _invalidate_sql_cache()
+#     return cursor.rowcount > 0
 
 
 def find_enabled(left_dataset_id: str, right_dataset_id: str) -> dict[str, Any] | None:
